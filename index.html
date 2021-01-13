@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileJs  </title>
+    <style>
+
+
+    </style>
+</head>
+
+<body>
+  <input type="file" id="file-uploader" accept=".jpg, .jpeg, .png">
+  <div id="image-grid"></div>
+  <div id="feedback"></div>
+  <!-- we make a file-progress -->
+  <label for="progress" id="progress-label"></label>
+  <progress id="progress" value="0" max='100'></progress>
+    <script>
+        const reader = new FileReader();
+        const imageGrid = document.getElementById('image-grid');
+        const fileUoloader = document.getElementById('file-uploader');
+        const feedback = document.getElementById('feedback');
+     // we see our progress load
+        const progress = document.getElementById('progress');
+        reader.addEventListener('progress', (e)=>{
+            if (e.loaded && e.total){
+                const percent = (e.loaded/e.total)*100;
+                progress.value = percent;
+                document.getElementById('progress-label').innerHTML = Math.round(percent) + '%';
+                if (percent === 100) {
+                    let msg = `<span style="color:green;">File <u><b>${file.name}</b></u> has been uploaded successfully.</span>`;
+                    feedback.innerHTML = msg;
+                }
+            }
+        })
+        fileUoloader.addEventListener('change', (e)=>{
+            const files = e.target.files;
+            const file = files[0];
+            const size = file.size;
+            let msg = '';
+           // check if file size more than 1MB and sent a message
+            if (size > 1024 * 1024) {
+                msg = `<span style="color:red;">The allowed file size is 1MB. The file you are trying to upload is of ${returnFileSize(size)}</span>`;
+            } else {
+                msg = `<span style="color:green;"> A ${returnFileSize(size)} file has been uploaded successfully. </span>`;
+            }
+         //watch our photo after load
+            reader.readAsDataURL(file);
+            reader.addEventListener('load', (e)=>{
+                const img = document.createElement('img');
+                imageGrid.appendChild(img);
+                img.src = e.target.result;
+                img.alt = file.name;
+            })
+            feedback.innerHTML = msg;
+        });
+        const returnFileSize = number => {
+  if(number < 1024) {
+    return number + 'bytes';
+  } else if(number >= 1024 && number < 1048576) {
+    return (number/1024).toFixed(2) + 'KB';
+  } else if(number >= 1048576) {
+    return (number/1048576).toFixed(2) + 'MB';
+  }
+}
+    </script>
+
+<!--
+    if we need to load a directory
+
+    <input type="file" id="file-uploader" webkitdirectory />
+   <ul id="pathList">
+       const fileUploader = document.getElementById('file-uploader');
+const pathList = document.getElementById('pathList');
+
+function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
+
+fileUploader.addEventListener('change', (event) => {
+  const files = event.target.files;
+  console.log('files', files);
+
+  removeAllChildNodes(pathList);
+
+  [...files].forEach((file, index) => {
+    let path = document.createElement('li');
+    path.innerHTML = file.webkitRelativePath;
+    pathList.appendChild(path);
+  });
+});
+ -->
+
+ <!--
+     when we want to drop in some place on display
+
+
+<div id="container">
+  <h1>Drag & Drop an Image</h1>
+<div id="drop-zone">
+    DROP HERE
+</div>
+
+<div id="content">
+    Your image to appear here..
+</div>
+
+</div>
+
+html {
+  height: 100%;
+}
+
+body {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+div {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Roboto Mono', monospace;
+}
+
+div#container {
+  margin: 15px;
+}
+
+div#drop-zone {
+  height: 400px;
+  width: 400px;
+  border: 2px dotted #ebebeb;
+}
+
+div#drop-zone:hover {
+  background-color: gray;
+  border: 1px dotted #000000;
+  cursor: move;
+}
+
+div#content {
+  border: 1px solid #FFF;
+  margin-top: 15px;
+  padding: 10px;
+}
+
+const dropZone = document.getElementById('drop-zone');
+const content = document.getElementById('content');
+
+const reader = new FileReader();
+
+if (window.FileList && window.File) {
+  dropZone.addEventListener('dragover', event => {
+    event.stopPropagation();
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+  });
+
+  dropZone.addEventListener('drop', event => {
+    content.innerHTML = '';
+    event.stopPropagation();
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    console.log(files);
+
+    reader.readAsDataURL(files[0]);
+
+    reader.addEventListener('load', (event) => {
+      content.innerHTML = '';
+      const img = document.createElement('img');
+      img.style.height = '400px';
+      img.style.width = '400px';
+      content.appendChild(img);
+      img.src = event.target.result;
+      img.alt = file.name;
+
+    });
+  });
+}
+  -->
+
+
+</body>
+</html>
